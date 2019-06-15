@@ -10,6 +10,7 @@ import * as _ from "lodash";
 })
 export class AppComponent {
   title = "D3 Sandbox";
+  tabIndex = 1;
 
   @ViewChild("g") g;
   ngAfterViewInit() {
@@ -106,8 +107,10 @@ export class AppComponent {
 
   showChart(showRegular) {
     if (showRegular) {
+      this.tabIndex = 1;
       this.drawRegularChart();
     } else {
+      this.tabIndex = 2;
       this.drawStackedChart();
     }
   }

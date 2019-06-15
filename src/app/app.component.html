@@ -8,12 +8,16 @@
     <div
       style="margin: 5px; border:1px solid; cursor: pointer;"
       (click)="showChart(true)"
+      [style.background-color]="tabIndex == 1? 'steelblue':undefined"
+      [style.color]="tabIndex == 1? 'white':undefined"
     >
       Regular Bar Chart
     </div>
     <div
       style="margin: 5px; border:1px solid; cursor: pointer;"
       (click)="showChart(false)"
+      [style.background-color]="tabIndex == 2? 'steelblue':undefined"
+      [style.color]="tabIndex == 2? 'white':undefined"
     >
       Stacked Bar Chart
     </div>
