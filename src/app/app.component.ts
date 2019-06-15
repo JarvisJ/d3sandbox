@@ -35,8 +35,6 @@ export class AppComponent {
     var xAxis = d3.axisBottom(x);
     var yAxis = d3.axisRight(y);
 
-    var rects = d3G.selectAll("rect");
-
     d3G
       .append("g")
       .attr("transform", "translate(0,500)")
@@ -47,7 +45,8 @@ export class AppComponent {
       .attr("transform", "translate(500,0)")
       .call(yAxis);
 
-    rects
+    d3G
+      .selectAll("rect")
       .data(testData)
       .join("rect")
       .attr("x", (d, i) => x(i + ""))
@@ -79,8 +78,6 @@ export class AppComponent {
     var xAxis = d3.axisBottom(x);
     var yAxis = d3.axisRight(y);
 
-    var rects = d3G.selectAll("rect");
-
     d3G
       .append("g")
       .attr("transform", "translate(0,500)")
@@ -91,7 +88,8 @@ export class AppComponent {
       .attr("transform", "translate(500,0)")
       .call(yAxis);
 
-    rects
+    d3G
+      .selectAll("rect")
       .data(testData)
       .join("rect")
       .attr("x", (d, i) => x(i + ""))
