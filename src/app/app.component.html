@@ -3,6 +3,21 @@
   <h1>
     {{ title }}
   </h1>
+
+  <div style="display:flex">
+    <div
+      style="margin: 5px; border:1px solid; cursor: pointer;"
+      (click)="showChart(true)"
+    >
+      Regular Bar Chart
+    </div>
+    <div
+      style="margin: 5px; border:1px solid; cursor: pointer;"
+      (click)="showChart(false)"
+    >
+      Stacked Bar Chart
+    </div>
+  </div>
   <svg height="540" width="540">
     <g #g style="transform: translate(40,40)"></g>
   </svg>
