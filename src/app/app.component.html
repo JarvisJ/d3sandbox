@@ -11,7 +11,7 @@
       [style.background-color]="tabIndex == 1? 'steelblue':undefined"
       [style.color]="tabIndex == 1? 'white':undefined"
     >
-      Regular Bar Chart
+      Stacked Bar Chart
     </div>
     <div
       style="margin: 5px; border:1px solid; cursor: pointer;"
@@ -19,11 +19,9 @@
       [style.background-color]="tabIndex == 2? 'steelblue':undefined"
       [style.color]="tabIndex == 2? 'white':undefined"
     >
-      Stacked Bar Chart
+      Regular Bar Chart
     </div>
   </div>
-  <svg height="540" width="540">
-    <g #gEle style="transform: translate(40,40)"></g>
-  </svg>
-  <jj-stacked-chart #stackedChart [gElement]="g"></jj-stacked-chart>
+  <jj-stacked-chart *ngIf="tabIndex==1" #stackedChart></jj-stacked-chart>
+  <jj-bar-chart *ngIf="tabIndex==2" #barChart></jj-bar-chart>
 </div>

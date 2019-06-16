@@ -1,4 +1,9 @@
-import { Component, Input, ChangeDetectionStrategy } from "@angular/core";
+import {
+  Component,
+  Input,
+  ChangeDetectionStrategy,
+  ViewChild
+} from "@angular/core";
 import * as d3 from "d3";
 import * as DateFns from "date-fns";
 import * as _ from "lodash";
@@ -13,10 +18,19 @@ export class StackedComponent {
   title = "D3 Sandbox";
   tabIndex = 1;
 
-  @Input() gElement;
+  @ViewChild("gEle") gElement;
+  @Input() Margin = 100;
+  @Input() Height = 500;
+  @Input() Width = 500;
+
+  ngOnInit() {
+    this.drawStackedChart();
+  }
 
   drawStackedChart() {
-    var d3G = d3.select(this.gElement.nativeElement);
+    var d3G = d3
+      .select(this.gElement.nativeElement)
+      .attr("transform", `translate(${this.Margin},${this.Margin})`);
     d3G.selectAll("g").remove();
 
     var testData = [
@@ -37,13 +51,27 @@ export class StackedComponent {
       .range([500, 0])
       .domain([0, d3.max(testData, d => _.sum(d.values))]);
 
-    var xAxis = d3.axisBottom(x);
+    var xAxis = d3
+      .axisBottom(x)
+      .tickValues(
+        _(testData)
+          .map(d => d.date)
+          .uniq()
+          .value()
+      )
+      .tickFormat(d3.timeFormat("%c"));
     var yAxis = d3.axisRight(y);
 
     d3G
       .append("g")
       .attr("transform", "translate(0,500)")
-      .call(xAxis);
+      .call(xAxis)
+      .selectAll("text")
+      .attr("y", 10)
+      .attr("x", 5)
+      //   .attr("dy", ".35em")
+      .attr("transform", "rotate(45)")
+      .style("text-anchor", "start");
 
     d3G
       .append("g")
