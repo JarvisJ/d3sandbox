@@ -7,6 +7,7 @@ import {
 import * as d3 from "d3";
 import * as DateFns from "date-fns";
 import * as _ from "lodash";
+//import {Delaunay} from "d3-delaunay";
 
 @Component({
   selector: "jj-stacked-chart",
@@ -127,6 +128,38 @@ export class StackedComponent {
       .attr("y", d => y(d[1] * 0.5))
       .attr("height", d => y(d[0] * 0.5) - y(d[1] * 0.5))
       .attr("width", 10);
+      
+
+      var textEl = d3G
+      .append("g")
+      .selectAll("g")
+      .data(series)
+      .join("g")
+      .attr("fill", d => color(d.key) as any)
+      .selectAll("text")
+      .data(d => d)
+      .join("text")
+      .attr("x", (d, i) => x(d.data.date) - 15-2)
+      .attr("y", d => y(d[1]))
+      .text((d,i)=>d[1]-d[0])
+      .attr("text-anchor","end")  
+      .attr("alignment-baseline","middle");
+
+      d3G
+      .append("g")
+      .selectAll("g")
+      .data(textEl)
+      .join("g")
+      .attr("fill", d => color(d.key) as any)
+      .selectAll("text")
+      .data(d => d)
+      .join("text")
+      .attr("x", (d, i) => x(d.data.date) - 15-2)
+      .attr("y", d => y(d[1]))
+      .text((d,i)=>d[1]-d[0])
+      .attr("text-anchor","end")  
+      .attr("alignment-baseline","middle");
+
 
     // .join("rect")
     // .attr("x", (d, i) => x(d.date) - 20)
@@ -145,6 +178,10 @@ export class StackedComponent {
     //   .attr("width", 10)
     //   .attr("height", d => 500 - y(_.sum(d.values) * 0.5))
     //   .style("fill", "steelblue");
+  }
+
+  adjustYLabelCoords() {
+
   }
 
   showChart() {
