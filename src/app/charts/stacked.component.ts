@@ -26,8 +26,8 @@ export class StackedComponent {
   @Input() Width = 500;
   @Input() Data = [
     { date: new Date(), seg1: 1, seg2: .01, seg3: .02, seg4: .3, seg5: .2, seg6: .1, seg7: .2, seg8: .1, seg9: 2 },
-    { date: DateFns.addDays(new Date(),1), seg1: 1, seg2: .01, seg3: .02, seg4: .3, seg5: .2, seg6: .1, seg7: .2, seg8: .1, seg9:2 },
-    { date: DateFns.addMonths(new Date(), 2), seg1: 1, seg2: 1, seg3: 2, seg4: 3, seg5: .2, seg6: .1, seg7: .2, seg8: .1, seg9: 2  }
+    { date: DateFns.addDays(new Date(), 1), seg1: 1, seg2: .01, seg3: .02, seg4: .3, seg5: .2, seg6: .1, seg7: .2, seg8: .1, seg9: 2 },
+    { date: DateFns.addMonths(new Date(), 2), seg1: 1, seg2: 1, seg3: 2, seg4: 3, seg5: .2, seg6: .1, seg7: .2, seg8: .1, seg9: 2 }
   ];
 
   bar1Offset = -15;
@@ -37,11 +37,26 @@ export class StackedComponent {
   xAxis;
   timeFormat;
 
+  dateData;
+  textEl;
+  lineEl;
+  rectEle1;
+  rectEle2;
+  xAxisElement;
+  x;
+  y;
+  color;
+  color2;
+  isSmartLabelsOn: boolean;
+  isSmartAxisOn: boolean;
+  textData;
+
+
   ngOnInit() {
-    this.drawStackedChart();
+    this.initStackedChart();
   }
 
-  drawStackedChart() {
+  initStackedChart() {
     var d3G = d3
       .select(this.gElement.nativeElement)
       .attr("transform", `translate(${this.Margin},${this.Margin})`);
@@ -51,31 +66,31 @@ export class StackedComponent {
     var maxDate = DateFns.max(..._.map(this.Data, d => d.date));
     var keys = ["seg1", "seg2", "seg3", "seg4", "seg5", "seg6", "seg7", "seg8", "seg9"];
 
-    var x = d3
+    this.x = d3
       .scaleTime()
       .rangeRound([0, 500])
       .domain([DateFns.addDays(minDate, -5), DateFns.addDays(maxDate, 5)]);
- 
-    var y = d3
+
+    this.y = d3
       .scaleLinear()
       .range([500, 0])
       .domain([0, d3.max(this.Data, d => _.sumBy(keys, k => d[k] || 0))]);
 
-    
+
     this.timeFormat = d3.timeFormat("%c");
     this.xAxis = d3
-      .axisBottom(x)
+      .axisBottom(this.x)
       .tickValues(
         _(this.Data)
-          .map(d => d.date) 
+          .map(d => d.date)
           .value()
       )
-      .tickFormat(d =>  this.timeFormat(d)); 
-    var yAxis = d3.axisRight(y);
+      .tickFormat(d => this.timeFormat(d));
+    var yAxis = d3.axisRight(this.y);
 
     this.series = d3.stack().keys(keys)(this.Data as any);
 
-    let color = d3
+    this.color = d3
       .scaleOrdinal()
       .domain(this.series.map(d => d.key))
       .range(
@@ -85,7 +100,7 @@ export class StackedComponent {
       )
       .unknown("#ccc");
 
-    let color2 = d3
+    this.color2 = d3
       .scaleOrdinal()
       .domain(this.series.map(d => d.key))
       .range(
@@ -95,18 +110,18 @@ export class StackedComponent {
       )
       .unknown("#ccc");
 
-    var xAxisElement = d3G
+    this.xAxisElement = d3G
       .append("g")
       .attr("class", "x-axis")
       .attr("transform", "translate(0,500)");
-    
-    xAxisElement.call(this.xAxis)
-        .selectAll("text")
-        .attr("y", 10)
-        .attr("x", 5)
-        //   .attr("dy", ".35em")
-        .attr("transform", "rotate(45)")
-        .style("text-anchor", "start");
+
+    this.xAxisElement.call(this.xAxis)
+      .selectAll("text")
+      .attr("y", 10)
+      .attr("x", 5)
+      //   .attr("dy", ".35em")
+      .attr("transform", "rotate(45)")
+      .style("text-anchor", "start");
 
     d3G
       .append("g")
@@ -114,55 +129,55 @@ export class StackedComponent {
       .call(yAxis);
 
 
-    var rectEle1 = d3G
+    this.rectEle1 = d3G
       .append("g")
       .selectAll("g")
       .data(this.series)
       .join("g")
-      .attr("fill", d => color(d.key) as any)
+      .attr("fill", d => this.color(d.key) as any)
       .selectAll("rect")
       .data(d => d)
       .join("rect")
-      .attr("x", (d, i) => x(d.data.date) + this.bar1Offset)
-      .attr("y", d => y(d[1]))
-      .attr("height", d => y(d[0]) - y(d[1]))
+      .attr("x", (d, i) => this.x(d.data.date) + this.bar1Offset)
+      .attr("y", d => this.y(d[1]))
+      .attr("height", d => this.y(d[0]) - this.y(d[1]))
       .attr("width", this.barWidth); // x.bandwidth());
 
-    var rectEle2 = d3G
+    this.rectEle2 = d3G
       .append("g")
       .selectAll("g")
       .data(this.series)
       .join("g")
-      .attr("fill", d => color2(d.key) as any)
+      .attr("fill", d => this.color2(d.key) as any)
       .selectAll("rect")
       .data(d => d)
       .join("rect")
-      .attr("x", (d, i) => x(d.data.date) + this.bar2Offset)
-      .attr("y", d => y(d[1] * 0.5))
-      .attr("height", d => y(d[0] * 0.5) - y(d[1] * 0.5))
+      .attr("x", (d, i) => this.x(d.data.date) + this.bar2Offset)
+      .attr("y", d => this.y(d[1] * 0.5))
+      .attr("height", d => this.y(d[0] * 0.5) - this.y(d[1] * 0.5))
       .attr("width", 10);
 
 
 
     // this.smartLabelForceLayout(d3G, x, y, color);
-    var textData = _.flatMap(this.series, d => _.map(d, dd => { return { key: d.key, x: x(dd.data.date) + this.textOffset - this.barWidth / 2, y: y(dd[1] - (dd[1] - dd[0]) / 2), value: dd[1] - dd[0], date: dd.data.date } }));
+    this.initializeTextData();
 
-    var textEl = d3G.append("g")
+    this.textEl = d3G.append("g")
       .selectAll("g")
-      .data(textData)
+      .data(this.textData)
       .join("text")
-      .attr("fill", d => color(d.key) as any)
+      .attr("fill", d => this.color(d.key) as any)
       .attr("x", d => d.x)
       .attr("y", d => d.y)
       .text((d, i) => _.round(d.value, 2))
       .attr("text-anchor", "end")
       .attr("alignment-baseline", "middle");
 
-    var lineEl = d3G.append("g")
+    this.lineEl = d3G.append("g")
       .selectAll("g")
-      .data(textData)
+      .data(this.textData)
       .join("line")
-      .style("stroke", d => color(d.key) as any)
+      .style("stroke", d => this.color(d.key) as any)
       .attr("x1", (d, i) => d.x)
       .attr("y1", d => d.y)
       .attr("x2", (d, i) => d.x - this.textOffset)
@@ -171,57 +186,71 @@ export class StackedComponent {
       .attr("text-anchor", "end")
       .attr("alignment-baseline", "middle");
 
-   // this.smartLabelForceLayout(textData, textEl, lineEl);
-    
-    var dateData = _.map(this.Data, d => {
+    // this.smartLabelForceLayout(textData, textEl, lineEl);
+
+    this.initializeDateData();
+    //  this.smartAxisForceLayout(dateData, textEl, lineEl, rectEle1, rectEle2,xAxisElement,x);
+
+
+  }
+
+  toggleSmartLabels() {
+    if (this.isSmartLabelsOn) {
+      if (this.labelSim) {
+        this.labelSim.stop();
+        this.resetTextData();
+      }
+      this.simUpdate(true);
+    }
+    else {
+      this.smartLabelForceLayout();
+    }
+
+    this.isSmartLabelsOn = !this.isSmartLabelsOn;
+  }
+
+  toggleSmartAxis() {
+    if (this.isSmartAxisOn) {
+      if (this.axisSim) {
+        this.axisSim.stop();
+        this.initializeDateData();
+      }
+      this.simUpdate(true);
+    }
+    else
+      this.smartAxisForceLayout();
+    this.isSmartAxisOn = !this.isSmartAxisOn;
+  }
+
+  initializeDateData() {
+    this.dateData = _.map(this.Data, d => {
       return {
         date: d.date,
-        origX: x(d.date),
-        x: x(d.date),
+        origX: this.x(d.date),
+        x: this.x(d.date),
         y: 0,
       };
     }
     );
-
-  //  this.smartAxisForceLayout(dateData, textEl, lineEl, rectEle1, rectEle2,xAxisElement,x);
-
-    this.doSmartLabels = () => {
-      this.smartLabelForceLayout(textData, textEl, lineEl);
-    }
-
-    this.doSmartAxis = () => {
-      this.smartAxisForceLayout(dateData, textEl, lineEl, rectEle1, rectEle2, xAxisElement, x);
-    }
-    
-    // .join("rect")
-    // .attr("x", (d, i) => x(d.date) - 20)
-    // .attr("y", (d, i) => y(_.sum(d.values)))
-    // .attr("width", 30)
-    // .attr("height", d => 500 - y(_.sum(d.values)))
-    // .style("fill", "green");
-
-    // d3G
-    //   .append("g")
-    //   .selectAll("rect")
-    //   .data(this.Data)
-    //   .join("rect")
-    //   .attr("x", (d, i) => x(d.date) + 10)
-    //   .attr("y", (d, i) => y(_.sum(d.values) * 0.5))
-    //   .attr("width", 10)
-    //   .attr("height", d => 500 - y(_.sum(d.values) * 0.5))
-    //   .style("fill", "steelblue");
+    this.xOffsetByDate = _.keyBy(this.dateData, d => d.date);
+  }
+  initializeTextData() {
+    this.textData = _.flatMap(this.series, d => _.map(d, dd => { return { key: d.key, x: this.x(dd.data.date) + this.textOffset - this.barWidth / 2, y: this.y(dd[1] - (dd[1] - dd[0]) / 2), value: dd[1] - dd[0], date: dd.data.date, origItem: dd } }));
   }
 
-  doSmartLabels;
-  doSmartAxis;
+  resetTextData() {
+    _.each(this.textData, d => {
+      d.x = this.x(d.date) + this.textOffset - this.barWidth / 2;
+      d.y = this.y(d.origItem[1] - (d.origItem[1] - d.origItem[0]) / 2);
+    });
+  }
+ 
+  labelSim;
+  axisSim;
 
-  smartLabelForceLayout(textData, textEl, lineEl) {
-    function onTick() {
-      textEl.attr("y", d => d.y);
-      lineEl.attr("y1", d => d.y);
-    }
+  smartLabelForceLayout() {
 
-    var sim = d3.forceSimulation(textData)
+    this.labelSim = d3.forceSimulation(this.textData)
       //.force('charge', d3.forceManyBody().strength(1))
       .force('x', d3.forceX().x(function (d) {
         return d.x
@@ -229,7 +258,7 @@ export class StackedComponent {
       .force('collision', d3.forceCollide().radius(function (d) {
         return 7;
       }))
-      .on('tick', onTick);
+      .on('tick', this.simUpdate.bind(this));
 
     // slowSim();
     // var i = 0;
@@ -245,40 +274,13 @@ export class StackedComponent {
     //}
   }
 
-  smartAxisForceLayout(yData, textEl, lineEl, rectEle1, rectEle2, xAxisElement, x) {
-    var xOffsetByDate;
+  updateChart() {
 
-    function getXOffset(date) {
-      return xOffsetByDate[date].x - xOffsetByDate[date].origX;
-    }
- 
-    let onTick = () => {
-      xOffsetByDate = _.keyBy(yData, d => d.date);
+  }
 
-      
-      this.xAxis = d3
-        .axisBottom(x)
-        .tickValues(
-          _.map(this.Data, d => x.invert(x(d.date)+getXOffset(d.date)))
-        )
-        .tickFormat((d,idx) => this.timeFormat(this.Data[idx].date)); 
-
-      xAxisElement.call(this.xAxis)
-        .selectAll("text")
-      .attr("y", 10)
-      .attr("x", 5)
-      //   .attr("dy", ".35em")
-      .attr("transform", "rotate(45)")
-      .style("text-anchor", "start");
-
-      textEl.attr("x", d => d.x + getXOffset(d.date));
-      lineEl.attr("x1", (d, i) => d.x + getXOffset(d.date))
-        .attr("x2", (d, i) => d.x - this.textOffset + getXOffset(d.date));
-      rectEle1.attr("x", (d, i) => x(d.data.date) + this.bar1Offset + getXOffset(d.data.date))
-      rectEle2.attr("x", (d, i) => x(d.data.date) + this.bar2Offset + getXOffset(d.data.date))
-    };
-
-    var sim = d3.forceSimulation(yData)
+  xOffsetByDate;
+  smartAxisForceLayout() {
+    this.axisSim = d3.forceSimulation(this.dateData)
       //.force('charge', d3.forceManyBody().strength(1))
       .force('y', d3.forceY().y(function (d) {
         return d.y
@@ -286,23 +288,79 @@ export class StackedComponent {
       .force('collision', d3.forceCollide().radius(function (d) {
         return 40;
       }))
-      .on('tick', onTick);
-
-    // slowSim();
-    // var i = 0;
-    // function slowSim() {
-    //   i++;
-    //   if (i > 1000) return;
-    //   console.log(i);
-    //   setTimeout(() => {
-    //     sim.tick();
-    //     onTick();
-    //     slowSim();
-    //   }, 300);
-    //}
+      .on('tick', this.simUpdate.bind(this));
   }
 
-  showChart() {
-    this.drawStackedChart();
+  transitionDuration = 1000;
+  labelSimUpdate(useTransition = false) {
+    let transitionDuration = useTransition ? this.transitionDuration : 0;
+    this.textEl
+      .transition()
+      .duration(transitionDuration)
+      .attr("y", d => d.y);
+
+    this.lineEl
+      .transition()
+      .duration(transitionDuration)
+      .attr("y1", d => d.y);
+  }
+
+  getXSimOffset(date) {
+    return this.xOffsetByDate[date].x - this.xOffsetByDate[date].origX;
+  }
+
+  simUpdate(useTransition = false) {
+    //  this.xOffsetByDate = _.keyBy(this.dateData, d => d.date);
+    let transitionDuration = useTransition ? this.transitionDuration : 0;
+    this.xAxis = d3
+      .axisBottom(this.x)
+      .tickValues(
+        _.map(this.Data, d => this.x.invert(this.x(d.date) + this.getXSimOffset(d.date)))
+      )
+      .tickFormat((d, idx) => this.timeFormat(this.Data[idx].date));
+
+    this.xAxisElement
+      .transition()
+      .duration(transitionDuration)
+      .call(this.xAxis)
+      .selectAll("text")
+      .attr("transform", "rotate(45)")
+      // .attrTween("transform", () => d3.interpolateTransformSvg("rotate(45)", "rotate(45)"))
+      .attr("y", 10)
+      .attr("x", 5)
+      //   .attr("dy", ".35em")
+      .style("text-anchor", "start");
+
+    this.textEl.transition()
+      .duration(transitionDuration)
+      .attr("y", d => d.y)
+      .attr("x", d => d.x + this.getXSimOffset(d.date));
+    this.lineEl.transition()
+      .duration(transitionDuration)
+      .attr("y1", d => d.y)
+      .attr("x1", (d, i) => d.x + this.getXSimOffset(d.date))
+      .attr("x2", (d, i) => d.x - this.textOffset + this.getXSimOffset(d.date));
+    this.rectEle1
+      .transition()
+      .duration(transitionDuration).attr("x", (d, i) => this.x(d.data.date) + this.bar1Offset + this.getXSimOffset(d.data.date))
+    this.rectEle2
+      .transition()
+      .duration(transitionDuration).attr("x", (d, i) => this.x(d.data.date) + this.bar2Offset + this.getXSimOffset(d.data.date))
+  }
+
+  resetChart() {
+    if (this.axisSim) {
+      this.axisSim.stop();
+      this.initializeDateData();
+    }
+    if (this.labelSim) {
+      this.labelSim.stop();
+      this.resetTextData();
+    }
+    this.simUpdate(true);
+
+    this.isSmartLabelsOn = false;
+    this.isSmartAxisOn = false;
+    //   this.initStackedChart();
   }
 }

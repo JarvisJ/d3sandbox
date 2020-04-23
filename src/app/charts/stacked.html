@@ -1,14 +1,20 @@
 <div style="margin: 5px; border:1px solid; cursor: pointer;"
-     (click)="doSmartLabels()"
-     [style.background-color]="'steelblue'"
-     [style.color]="'white'">
-  Do smart labels
+     (click)="toggleSmartLabels()"
+      [style.background-color]="!isSmartLabelsOn? 'steelblue':undefined"
+      [style.color]="!isSmartLabelsOn? 'white':undefined">
+  {{(!isSmartLabelsOn?'Do':'Reset')}} smart labels
 </div>
 <div style="margin: 5px; border:1px solid; cursor: pointer;"
-     (click)="doSmartAxis()"
+     (click)="toggleSmartAxis()"
+      [style.background-color]="!isSmartAxisOn? 'steelblue':undefined"
+      [style.color]="!isSmartAxisOn? 'white':undefined">
+  {{(!isSmartAxisOn?'Do':'Reset')}} smart axis
+</div>
+<div style="margin: 5px; border:1px solid; cursor: pointer;"
+     (click)="resetChart()"
      [style.background-color]="'steelblue'"
      [style.color]="'white'">
-  Do smart axis
+  Reset
 </div>
 <svg [attr.height]="Height+Margin*2" [attr.width]="Width+Margin*2">
   <g #gEle></g>
