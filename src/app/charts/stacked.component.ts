@@ -22,7 +22,7 @@ export class StackedComponent {
 
   @ViewChild("gEle") gElement;
   @Input() Margin = 100;
-  @Input() Height = 500;
+  @Input() Height = 400;
   @Input() Width = 500;
   @Input() Data = [
     { date: new Date(), seg1: 1, seg2: .01, seg3: .02, seg4: .3, seg5: .2, seg6: .1, seg7: .2, seg8: .1, seg9: 2 },
@@ -68,12 +68,12 @@ export class StackedComponent {
 
     this.x = d3
       .scaleTime()
-      .rangeRound([0, 500])
+      .rangeRound([0, this.Width])
       .domain([DateFns.addDays(minDate, -5), DateFns.addDays(maxDate, 5)]);
 
     this.y = d3
       .scaleLinear()
-      .range([500, 0])
+      .range([this.Height, 0])
       .domain([0, d3.max(this.Data, d => _.sumBy(keys, k => d[k] || 0))]);
 
 
@@ -113,7 +113,7 @@ export class StackedComponent {
     this.xAxisElement = d3G
       .append("g")
       .attr("class", "x-axis")
-      .attr("transform", "translate(0,500)");
+      .attr("transform", `translate(0,${this.Height})`);
 
     this.xAxisElement.call(this.xAxis)
       .selectAll("text")
@@ -125,7 +125,7 @@ export class StackedComponent {
 
     d3G
       .append("g")
-      .attr("transform", "translate(500,0)")
+      .attr("transform", `translate(${this.Width},0)`)
       .call(yAxis);
 
 
