@@ -1,3 +1,15 @@
+<div style="margin: 5px; border:1px solid; cursor: pointer;"
+     (click)="doSmartLabels()"
+     [style.background-color]="'steelblue'"
+     [style.color]="'white'">
+  Do smart labels
+</div>
+<div style="margin: 5px; border:1px solid; cursor: pointer;"
+     (click)="doSmartAxis()"
+     [style.background-color]="'steelblue'"
+     [style.color]="'white'">
+  Do smart axis
+</div>
 <svg [attr.height]="Height+Margin*2" [attr.width]="Width+Margin*2">
   <g #gEle></g>
 </svg>
