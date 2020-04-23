@@ -4,3 +4,8 @@ html,
 body {
   font-family: sans-serif;
 }
+rect.zoomPane {
+  cursor: grab;
+  fill: none;
+  pointer-events: all;
+}

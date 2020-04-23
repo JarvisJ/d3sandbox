@@ -4,7 +4,7 @@
     {{ title }}
   </h1>
 
-  <div style="display:flex">
+  <!-- <div style="display:flex">
     <div
       style="margin: 5px; border:1px solid; cursor: pointer;"
       (click)="showChart(true)"
@@ -21,7 +21,7 @@
     >
       Regular Bar Chart
     </div>
-  </div>
+  </div> -->
   <jj-stacked-chart *ngIf="tabIndex==1" #stackedChart></jj-stacked-chart>
   <jj-bar-chart *ngIf="tabIndex==2" #barChart></jj-bar-chart>
 </div>

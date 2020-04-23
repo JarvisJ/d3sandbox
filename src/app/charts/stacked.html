@@ -11,9 +11,7 @@
   {{(!isSmartAxisOn?'Do':'Reset')}} smart axis
 </div>
 <div style="margin: 5px; border:1px solid; cursor: pointer;"
-     (click)="resetChart()"
-     [style.background-color]="'steelblue'"
-     [style.color]="'white'">
+     (click)="resetChart()" >
   Reset
 </div>
 <svg [attr.height]="Height+Margin*2" [attr.width]="Width+Margin*2">
