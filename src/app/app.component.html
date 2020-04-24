@@ -4,14 +4,14 @@
     {{ title }}
   </h1>
 
-  <!-- <div style="display:flex">
+  <div style="display:flex">
     <div
       style="margin: 5px; border:1px solid; cursor: pointer;"
       (click)="showChart(true)"
       [style.background-color]="tabIndex == 1? 'steelblue':undefined"
       [style.color]="tabIndex == 1? 'white':undefined"
     >
-      Stacked Bar Chart
+      Stacked Timeseries Bar Chart
     </div>
     <div
       style="margin: 5px; border:1px solid; cursor: pointer;"
@@ -19,9 +19,31 @@
       [style.background-color]="tabIndex == 2? 'steelblue':undefined"
       [style.color]="tabIndex == 2? 'white':undefined"
     >
-      Regular Bar Chart
+      Regular Stacked Bar Chart
     </div>
-  </div> -->
-  <jj-stacked-chart *ngIf="tabIndex==1" #stackedChart></jj-stacked-chart>
-  <jj-bar-chart *ngIf="tabIndex==2" #barChart></jj-bar-chart>
+    <div style="margin: 5px; border:1px solid; cursor: pointer;"
+         (click)="ShowGlidePaths = !ShowGlidePaths"
+         [style.background-color]="'steelblue'"
+         [style.color]="'white'">
+      {{(!ShowGlidePaths?'Show':'Hide')}} Glide Paths
+    </div>
+  </div>
+  <jj-stacked-chart *ngIf="tabIndex==1"
+                    #stackedChart
+                    [IsTimeScale]="true"
+                    XKeyProperty="date"
+                    [Data]="Data"
+                    [Bar1Colors]="BarChartThemeSet[0]?.Colors"
+                    [Bar2Colors]="BarChartThemeSet2[0]?.Colors"
+                    [GlidePaths]="GlidePaths" 
+                    [ShowGlidePaths]="ShowGlidePaths"
+                    [DoRotateXLabels]="true"></jj-stacked-chart>
+  <jj-stacked-chart *ngIf="tabIndex==2"
+                    #stackedChart2
+                    [IsTimeScale]="false"
+                    [Data]="Data"
+                    [Bar1Colors]="BarChartThemeSet[0]?.Colors"
+                    [Bar2Colors]="BarChartThemeSet2[0]?.Colors"
+                    XKeyProperty="name"></jj-stacked-chart>
+  <!-- <jj-bar-chart *ngIf="tabIndex==2" #barChart></jj-bar-chart> -->
 </div>
