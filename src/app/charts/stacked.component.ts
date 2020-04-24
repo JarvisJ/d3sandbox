@@ -149,7 +149,7 @@ export class StackedComponent {
 
     var glidePathTickDates = this.ShowGlidePaths && !this.isSmartAxisOn ? _.map(this.GlidePaths, p => p.EndDate) : null;
     var chartTicks = _.map(this.Data, (d, idx) => this.IsTimeScale ? d[this.XKeyProperty] : idx);
-    var allTicks = _.concat(chartTicks, glidePathTickDates);
+    var allTicks = _.concat(chartTicks, glidePathTickDates).filter(t => t != null);;
 
     this.xAxis = d3
       .axisBottom(this.x)
@@ -484,9 +484,9 @@ export class StackedComponent {
     //  this.xOffsetByDate = _.keyBy(this.dateData, d => d.date);
     let transitionDuration = useTransition ? this.transitionDuration : 0;
 
-    var glidePathTickDates = this.ShowGlidePaths && !this.isSmartAxisOn? _.map(this.GlidePaths, p => p.EndDate):null;
+    var glidePathTickDates = this.ShowGlidePaths && !this.isSmartAxisOn && this.IsTimeScale? _.map(this.GlidePaths, p => p.EndDate):null;
     var chartTicks = _.map(this.Data, (d, idx) => this.zoomedX.invert(this.zoomedX(this.IsTimeScale ? d[this.XKeyProperty] : idx) + this.getXSimOffset(d[this.XKeyProperty])));
-    var allTicks = _.concat(chartTicks, glidePathTickDates);
+    var allTicks = _.concat(chartTicks, glidePathTickDates).filter(t=>t!=null);
 
     this.xAxis = d3
       .axisBottom(this.zoomedX)
